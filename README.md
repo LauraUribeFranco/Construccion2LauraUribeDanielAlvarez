@@ -1,7 +1,7 @@
-# Construccion2LauraUribeDanielAlvarez
+# Construccion2 LauraUribe DanielAlvarez
  Proyecto Veterinaria
 
-# Querido profesor
+## Querido profesor
 Nos hace falta
 * testing
 * terminar el menu
