@@ -20,18 +20,7 @@ public class Person {
 		this.role= role;
 	
 	}
-	public Object getName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	public Object getAge() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	public Object getRole() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 	
 }
 
