@@ -1,8 +1,11 @@
 package app.adapters.user.repository;
 
-import app.adapters.user.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
+import app.adapters.user.entity.UserEntity;
+
+@Repository
+public interface UserRepository extends JpaRepository<UserEntity, Long>{
 
 }
