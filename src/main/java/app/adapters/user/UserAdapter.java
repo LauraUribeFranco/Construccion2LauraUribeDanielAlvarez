@@ -61,7 +61,7 @@ public class UserAdapter implements UserPort {
         userEntity.setPassword(user.getPassword());
         
         // First check if this person already exists in the database
-        PersonEntity personEntity = null;
+        personEntity = null;
         if (user.getDocument() > 0) {
             Optional<PersonEntity> existingPerson = personRepository.findById(user.getDocument());
             if (existingPerson.isPresent()) {
