@@ -1,11 +1,13 @@
 package app.adapters.rest;
 
+import app.adapters.rest.dto.ApiResponse;
 import app.adapters.rest.dto.BillRequest;
 import app.domain.models.Bill;
 import app.domain.models.Order;
 import app.domain.models.Pet;
 import app.ports.BillPort;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +22,7 @@ public class BillController {
     private BillPort billPort;
 
     @PostMapping
-    public ResponseEntity<?> createBill(@RequestBody BillRequest request) {
+    public ResponseEntity<ApiResponse<Bill>> createBill(@RequestBody BillRequest request) {
         try {
             Pet pet = null;
             if (request.getPetId() != null) {
@@ -41,36 +43,56 @@ public class BillController {
             bill.setDate(new Timestamp(System.currentTimeMillis()));
 
             billPort.save(bill);
-            return ResponseEntity.ok(bill);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.created("Factura creada exitosamente", bill));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.serverError("Error al crear factura: " + e.getMessage()));
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getBill(@PathVariable long id) {
-        Bill bill = billPort.findByBillId(id);
-        if (bill == null) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<ApiResponse<Bill>> getBill(@PathVariable long id) {
+        try {
+            Bill bill = billPort.findByBillId(id);
+            if (bill == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.notFound("No se encontró la factura con ID: " + id));
+            }
+            return ResponseEntity.ok(ApiResponse.ok("Factura encontrada", bill));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.serverError("Error al buscar factura: " + e.getMessage()));
         }
-        return ResponseEntity.ok(bill);
     }
 
     @GetMapping("/pet/{petId}")
-    public ResponseEntity<?> getBillsByPet(@PathVariable long petId) {
-        List<Bill> bills = billPort.findByPetId(petId);
-        if (bills == null || bills.isEmpty()) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<ApiResponse<List<Bill>>> getBillsByPet(@PathVariable long petId) {
+        try {
+            List<Bill> bills = billPort.findByPetId(petId);
+            if (bills == null || bills.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.notFound("No se encontraron facturas para la mascota con ID: " + petId));
+            }
+            return ResponseEntity.ok(ApiResponse.ok("Facturas encontradas", bills));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.serverError("Error al buscar facturas: " + e.getMessage()));
         }
-        return ResponseEntity.ok(bills);
     }
 
     @GetMapping("/order/{orderId}")
-    public ResponseEntity<?> getBillsByOrder(@PathVariable long orderId) {
-        List<Bill> bills = billPort.findByOrderId(orderId);
-        if (bills == null || bills.isEmpty()) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<ApiResponse<List<Bill>>> getBillsByOrder(@PathVariable long orderId) {
+        try {
+            List<Bill> bills = billPort.findByOrderId(orderId);
+            if (bills == null || bills.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.notFound("No se encontraron facturas para la orden con ID: " + orderId));
+            }
+            return ResponseEntity.ok(ApiResponse.ok("Facturas encontradas", bills));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.serverError("Error al buscar facturas: " + e.getMessage()));
         }
-        return ResponseEntity.ok(bills);
     }
 }
